@@ -8,7 +8,7 @@ public class ArticleComment {
     private String content;
 
     private LocalDateTime createdAt;
-    private String createdBy;
+    private String createdBy; // 생성자
     private LocalDateTime modifiedAt;
     private String modifiedBy;
 }
