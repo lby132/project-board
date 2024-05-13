@@ -16,7 +16,7 @@ import java.util.Objects;
 @ToString
 @Table(indexes = {
         @Index(columnList = "content"),
-        @Index(columnList = "createAt"),
+        @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy"),
 })
 @Entity
