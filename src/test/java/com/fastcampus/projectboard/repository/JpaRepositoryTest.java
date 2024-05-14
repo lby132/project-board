@@ -3,12 +3,14 @@ package com.fastcampus.projectboard.repository;
 import com.fastcampus.projectboard.domain.Article;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,16 @@ class JpaRepositoryTest {
 
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+
+    @EnableJpaAuditing
+    @TestConfiguration
+    static class TestJpaConfig {
+        @Bean
+        AuditorAware<String> auditorAware() {
+            return () -> Optional.of("uno");
+        }
+
+    }
 
     JpaRepositoryTest(
             @Autowired ArticleRepository articleRepository,
@@ -51,12 +63,16 @@ class JpaRepositoryTest {
                 .hasSize(123);
     }
 
-    @EnableJpaAuditing
-    @TestConfiguration
-    static class TestJpaConfig {
-        @Bean
-        AuditorAware<String> auditorAware() {
-            return () -> Optional.of("uno");
-        }
+    @Test
+    void givenTestData_whenInserting_thenWorksFine() {
+        //given
+        long previousCount = articleRepository.count();
+
+        //when
+        articleRepository.save(Article.of("new article", "new content", "#spring"));
+
+        //then
+        assertThat(articleRepository.count()).isEqualTo(previousCount + 1);
     }
+
 }
